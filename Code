@@ -1,0 +1,312 @@
+from prettytable import PrettyTable
+from operator import itemgetter
+
+#DATA LIST
+
+spring_stock = [
+    {'Product Name': 'Parsnip Seeds', 'Product Code': 'SPR001', 'Price (g)': 20, 'Stock': 100, 'Desc': 'Takes 4 days to mature.'},
+    {'Product Name': 'Bean Starter', 'Product Code': 'SPR002', 'Price (g)': 60, 'Stock': 100, 'Desc': 'Takes 10 days to mature, but keeps producing after that. Grows on a trellis.'},
+    {'Product Name': 'Cauliflower Seeds', 'Product Code': 'SPR003', 'Price (g)': 80, 'Stock': 100, 'Desc': 'akes 12 days to produce a large cauliflower.'},
+    {'Product Name': 'Potato Seeds', 'Product Code': 'SPR004', 'Price (g)': 50, 'Stock': 100, 'Desc': 'Takes 6 days to mature, and has a chance of yielding multiple potatoes at harvest.'},
+    {'Product Name': 'Jazz Seeds', 'Product Code': 'SPR005', 'Price (g)': 30, 'Stock': 100, 'Desc': 'Takes 7 days to produce a blue puffball flower.'},
+]
+
+summer_stock = [
+    {'Product Name': 'Melon Seeds', 'Product Code': 'SUM001', 'Price (g)': 80, 'Stock': 100, 'Desc': 'Takes 12 days to mature.'},
+    {'Product Name': 'Tomato Seeds', 'Product Code': 'SUM002', 'Price (g)': 50, 'Stock': 60, 'Desc': 'Takes 11 days to mature, and continues to produce after first harvest.'},    
+    {'Product Name': 'Blueberry Seeds', 'Product Code': 'SUM003', 'Price (g)': 80, 'Stock': 100, 'Desc': 'Takes 13 days to mature, and continues to produce after first harvest.'},
+    {'Product Name': 'Wheat Seeds', 'Product Code': 'SUM005', 'Price (g)': 10, 'Stock': 200, 'Desc': 'Takes 4 days to mature. Harvest with the scythe.'},
+    {'Product Name': 'Hops Starter', 'Product Code': 'SUM010', 'Price (g)': 60, 'Stock': 85, 'Desc': 'Takes 11 days to grow, but keeps producing after that. Grows on a trellis.'},
+]
+
+fall_stock = [
+    {'Product Name': 'Eggplant Seeds', 'Product Code': 'FAL001', 'Price (g)': 20, 'Stock': 110, 'Desc': 'Takes 5 days to mature, and continues to produce after first harvest.'},
+    {'Product Name': 'Pumpkin Seeds', 'Product Code': 'FAL002', 'Price (g)': 100, 'Stock': 150, 'Desc': 'Takes 13 days to mature.'},
+    {'Product Name': 'Yam Seeds', 'Product Code': 'FAL003', 'Price (g)': 60, 'Stock': 70, 'Desc': 'Takes 10 days to mature.'},
+    {'Product Name': 'Cranberry Seeds', 'Product Code': 'FAL004', 'Price (g)': 240, 'Stock': 40, 'Desc': 'Takes 7 days to mature, and continues to produce after first harvest.'},
+    {'Product Name': 'Amaranth Seeds', 'Product Code': 'FAL005', 'Price (g)': 70, 'Stock': 95, 'Desc': 'Takes 7 days to grow. Harvest with the scythe.'},
+]
+
+#MENU DISPLAYS
+menu = {
+    'main_menu' : {
+        1 : 'Show All Products',
+        2 : 'Update Products', 
+        3 : 'Delete Products',
+        4 : 'Add Products',
+        5 : 'Exit'}, 
+
+    'sub_menu' : {
+        1 : 'Spring Stock',
+        2 : 'Summer Stock',
+        3 : 'Fall Stock', 
+        4 : 'Search for Items',
+        5 : 'Back to Main Menu'},
+
+    'sub_menu_2' : {
+        1 : 'Spring Stock',
+        2 : 'Summer Stock',
+        3 : 'Fall Stock', 
+        4 : 'Back to Main Menu'}
+}
+
+def show_data(stock): #SHOWS DATA TABLES
+    table = PrettyTable()
+    table.field_names = ["Product Name", "Product Code", "Price (g)", "Stock", "Desc"]
+
+    for rows in stock:
+        table.add_row(rows.values())
+    print(table)
+
+def update_data(stock): #UPDATES THE DATA IN THE WANTED TABLE
+    while True:
+        product_code = input('Enter the Product Code of the product that you want to update: ').strip()
+        if product_code.isalnum() == True and len(product_code) == 6:
+            for rows in range(len(stock)):
+                if stock[rows]['Product Code'] == product_code:
+                    while True: 
+                        new_name = input('Enter New Product Name: ').strip().lower()
+                        check = True
+                        for name in new_name.split():
+                            if name.isalpha() == False:
+                                check = False
+                                break
+                        if check == False:
+                            print('Only Alphabetical Values.')
+                        else:
+                            break
+                    while True:
+                        try:
+                            new_price = int(input('Enter New Product Price: '))
+                            break
+                        except:
+                            print('Only Numerical Values.')
+                    while True:
+                        try:
+                            new_stock = int(input('Enter New Product Stock: '))
+                            break
+                        except:
+                            print('Only Numerical Values.')
+                    new_desc = input('Enter New Desc: ')
+            
+                    stock[rows]['Product Name'] = new_name
+                    stock[rows]['Price (g)'] = new_price
+                    stock[rows]['Stock'] = new_stock
+                    stock[rows]['Desc'] = new_desc
+                    show_data(stock)
+                    print('Data Has Been Updated Successfully!')
+                    break
+            else:
+                print('Product Code Not Found.')
+        else: 
+            print('Enter Valid Product Code (Must Be 3 Alphabets and 3 Digits).')
+        break
+    
+def search_products(stock): #SEARCH PRODUCT IN INVENTORY
+    while True:
+        search_term = input("Enter the product name to search: ").strip().lower()
+        check = True
+        for name in search_term.split():
+            if name.isalpha() == False:
+                check = False
+                break
+        if check == False:
+            print('Only Alphabetical Values.')
+        else:
+            break
+    found_products = []
+    found = False
+
+    for stock_key, products in stock.items():
+        for rows in range(len(products)):
+            if search_term in products[rows]['Product Name'].lower():
+                found_products.append(products[rows])
+                found = True 
+    
+    if found == True:
+        found_products = sorted(found_products, key=itemgetter('Product Name'))
+        show_data(found_products)
+        print(f"Found products matching the search term ({search_term}):")
+    else:
+        print(f"No products found matching the search term ({search_term}).")
+
+def delete_product(stock): #DELETES A PRODUCT FROM THE WANTED TABLE
+    while True:
+        product_code = input('Enter the Product Code of the product that you want to delete: ').strip()
+        if product_code.isalnum() == True and len(product_code) == 6:
+            found_product = None 
+            for rows in range(len(stock)):
+                if stock[rows]['Product Code'] == product_code:                
+                    stock.pop(rows)
+                    found_product = True
+                    show_data(stock)
+                    print('Product Successfully Deleted.')
+                    break
+            if found_product == False:
+                print('Data not found')
+            break
+        else: 
+            print('Enter Valid Product Code (Must Be 3 Alphabets and 3 Digits).')
+        
+def add_data(stock, initial): #ADDS DATA INTO THE WANTED TABLE
+    add_product = {}
+
+    while True:
+        add_productName = input('Enter Product Name: ')
+        check = True        
+        for name in add_productName.split():
+            if name.isalpha() == False:
+                check = False
+                break
+        if check == False:
+            print('Only Alphabetical Values.')
+        else:
+            break
+    
+    while True: #checks whether the product code is unique or not 
+        add_productCode = str(input('Enter Product Code: '))
+        if add_productCode.isdigit() == True:
+            if len(add_productCode) == 3:
+                new_productCode = initial + add_productCode
+                for rows in range(len(stock)):
+                    if stock[rows]['Product Code'] == new_productCode:
+                        print('Product Code Exist.')
+                        break
+                else:
+                    break
+            else:
+                print('Must Be 3 Digits.')
+        else:
+            print('Only Numerical Values.')
+
+    while True:
+        try:
+            add_productPrice = int(input('Enter Product Price: '))
+            break
+        except:
+            print('Only Numerical Values.')
+    
+    while True:
+        try:
+            add_productStock = int(input('Enter Product Stock: '))
+            break
+        except: 
+            print('Only Numerical Values')
+
+    add_productDesc = input('Enter Product Desc: ')
+
+    
+    add_product['Product Name'] = add_productName
+    add_product['Product Code'] = new_productCode
+    add_product['Price (g)'] = add_productPrice
+    add_product['Stock'] = add_productStock
+    add_product['Desc'] = add_productDesc
+
+    stock.append(add_product)
+    show_data(stock)    
+    print(f"Product added successfully.")
+
+def print_menu(menu_dict): #PRINTS THE MENUS IN THE CORRECT FORMAT
+    print(f"Welcome To Pierre's General Store Inventory!")
+    for option, description in menu_dict.items():
+        print(f"{option}. {description}")        
+
+while True: #MAIN PROGRAM 
+    print_menu(menu['main_menu'])
+    condition = True
+    while condition:
+        try:
+            main_user_choice = int(input('Enter option: '))
+            condition = False
+        except:
+            print('Only Numerical Value.')
+    if main_user_choice == 1: #SHOW DATA
+        while True:
+            print_menu(menu['sub_menu'])
+            while True:
+                try:
+                    sub_user_choice = int(input('Enter option: '))
+                    break
+                except: 
+                    print('Only Numerical Values.')
+            if sub_user_choice == 1:
+                show_data(spring_stock)
+            elif sub_user_choice == 2:
+                show_data(summer_stock)
+            elif sub_user_choice == 3:
+                show_data(fall_stock)
+            elif sub_user_choice == 4:
+                search_products({'Spring Stock': spring_stock, 'Summer Stock': summer_stock, 'Fall Stock': fall_stock})
+            elif sub_user_choice == 5:
+                break
+            else:
+                print('Enter valid input')
+
+    elif main_user_choice == 2: #UPDATE DATA
+        while True: 
+            print_menu(menu['sub_menu_2'])
+            condition = True
+            while condition:
+                try:
+                    sub_user_choice = int(input('Enter option: '))
+                    condition = False
+                except:
+                    print('Only Numerical Values.')
+            if sub_user_choice == 1: 
+                update_data(spring_stock)
+            elif sub_user_choice == 2:
+                update_data(summer_stock)
+            elif sub_user_choice == 3:
+                update_data(fall_stock)
+            elif sub_user_choice == 4:
+                break
+            else: 
+                print('Enter a valid input.')
+    
+    elif main_user_choice == 3: #DELETE DATA
+        while True:
+            print_menu(menu['sub_menu_2'])
+            condition = True
+            while condition:
+                try:
+                    sub_user_choice = int(input('Enter the Stock where the product is in: '))
+                    condition = False
+                except:
+                    print('Only Numerical Value')
+            if sub_user_choice == 1:
+                show_data(spring_stock)
+                delete_product(spring_stock)
+            elif sub_user_choice == 2:
+                show_data(summer_stock)
+                delete_product(summer_stock)
+            elif sub_user_choice == 3:
+                show_data(fall_stock)
+                delete_product(fall_stock)
+            elif sub_user_choice == 4:
+                break
+            else: 
+                print('Enter a valid input.')  
+
+    elif main_user_choice == 4: #ADD DATA
+        add_new_product = input('''Which Stock do you want to add the new product into?
+                                1. Spring Stock
+                                2. Summer Stock
+                                3. Fall Stock
+                            
+                                Enter your choice: ''') 
+    
+        if not add_new_product.isdigit() or int(add_new_product) not in [1, 2, 3]: #INPUT VALIDITY CHECK
+            print('Enter a valid input (1, 2, or 3)')
+        else:
+            add_new_product = int(add_new_product)
+            if add_new_product == 1: #ADDS THE INITIALS/CODE FOR EACH STOCK WITH THE PRODUCT NUMBER (e.g. SPR + 190(user input) => SPR190)
+                add_data(spring_stock,'SPR')
+            elif add_new_product == 2:
+                add_data(summer_stock,'SUM')
+            elif add_new_product == 3:
+                add_data(fall_stock,'FAL')
+
+    elif main_user_choice == 5: #EXIT PROGRAM
+        break
+
+        
